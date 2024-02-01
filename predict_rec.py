@@ -173,10 +173,10 @@ class TextRecognizer(object):
 
         assert imgC == img.shape[2]
         imgW = int((imgH * max_wh_ratio))
-        if self.use_onnx:
-            w = self.input_tensor.shape[3:][0]
-            if w is not None and w > 0:
-                imgW = w
+        # if self.use_onnx:
+        #     w = self.input_tensor.shape[3:][0]
+        #     if w is not None and w > 0:
+        #         imgW = w
 
         h, w = img.shape[:2]
         ratio = w / float(h)
