@@ -161,7 +161,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_predictor(args, mode):
+def create_predictor(args, mode, logger):
     if mode == "det":
         model_dir = args.det_model_dir
     elif mode == 'cls':

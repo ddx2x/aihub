@@ -32,7 +32,7 @@ import predict_rec
 import predict_det
 import predict_cls
 from utility import draw_ocr_box_txt, get_rotate_crop_image, get_minarea_rect_crop
-from ppocr.utils.utility import get_image_file_list,check_and_read
+from ppocr.utils.utility import get_image_file_list, check_and_read
 
 
 class TextSystem(object):
