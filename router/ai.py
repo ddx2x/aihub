@@ -1,4 +1,4 @@
-from main import app
+from fastapi import APIRouter
 from fastapi import File,UploadFile,Form
 import fitz
 from PIL import Image
@@ -11,8 +11,22 @@ import paddle.ocr.utility as utility
 import paddle.ocr.predict_system as predict_system
 
 
+router = APIRouter(tags=["默认路由"])
 
-@app.post("/ai/ocr")
+@router.get("/")
+async def index():
+    """
+    默认访问链接
+    """
+    return {
+        "code": 200,
+        "msg": "Hello AI!"
+    }
+
+
+
+
+@router.post("/ai/ocr")
 async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
     ocr_imgs = []
     if pdf:
