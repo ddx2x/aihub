@@ -9,7 +9,8 @@ import base64
 import io
 import pad.ocr.utility as utility
 import pad.ocr.predict_system as predict_system
-
+from router.config import Config
+import os
 
 router = APIRouter(tags=["默认路由"])
 
@@ -22,8 +23,6 @@ async def index():
         "code": 200,
         "msg": "Hello AI!"
     }
-
-
 
 
 @router.post("/ai/ocr")
@@ -46,6 +45,8 @@ async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 ocr_imgs.append(img)
+        os.remove("tempfile.pdf")
+
     if base64_imgs:
         for img_b64 in base64_imgs:
             # 将base64字符串解码为二进制数据
@@ -54,14 +55,8 @@ async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
             img = Image.open(io.BytesIO(img_data))
             ocr_imgs.append(img)
 
-    args = utility.parse_args()
-    args.use_onnx = True
-    args.use_gpu = False
-    args.det_model_dir = './paddle/ocr/models/det_onnx/model.onnx'
-    args.rec_model_dir = './paddle/ocr/models/rec_onnx/model.onnx'
-    args.cls_model_dir = './paddle/ocr/models/cls_onnx/model.onnx'
-
-    text_sys = predict_system.TextSystem(args)
+    config = Config()
+    text_sys = predict_system.TextSystem(config)
     save_results = []
 
 
