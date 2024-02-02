@@ -7,8 +7,8 @@ import numpy as np
 from typing import List
 import base64
 import io
-import paddle.ocr.utility as utility
-import paddle.ocr.predict_system as predict_system
+import pad.ocr.utility as utility
+import pad.ocr.predict_system as predict_system
 
 
 router = APIRouter(tags=["默认路由"])
