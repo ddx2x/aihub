@@ -24,3 +24,4 @@ paddlepaddle==2.6.0
 lanms-neo==1.0.2
 PyMuPDF
 onnxruntime==1.16.3
+uvicorn
