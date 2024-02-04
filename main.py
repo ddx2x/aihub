@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from router import RegisterRouterList
 import os,sys
+import uvicorn
+
 app = FastAPI()
 
 for item in RegisterRouterList:
