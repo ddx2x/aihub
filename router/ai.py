@@ -57,7 +57,7 @@ async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
 
     config = Config()
     text_sys = predict_system.TextSystem(config)
-    save_results = []
+    save_results = ''
 
 
     for _, img in enumerate(ocr_imgs):
@@ -65,10 +65,10 @@ async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
 
             res = ''
             for i in range(len(dt_boxes)):
-                res+= rec_res[i][0]
+                res += rec_res[i][0]
 
            
-            save_results.append(res)
+            save_results += res
 
     return {"data": save_results}
 
