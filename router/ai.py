@@ -62,11 +62,11 @@ async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
 
     for _, img in enumerate(ocr_imgs):
             dt_boxes, rec_res, time_dict = text_sys(img)
-           
-            res = [{
-                "transcription": rec_res[i][0],
-                "points": np.array(dt_boxes[i]).astype(np.int32).tolist(),
-            } for i in range(len(dt_boxes))]
+
+            res = ''
+            for i in range(len(dt_boxes)):
+                res+= rec_res[i][0]
+
            
             save_results.append(res)
 
