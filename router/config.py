@@ -76,7 +76,7 @@ class Config:
         self.e2e_pgnet_mode = 'fast'
 
         # Params for text classifier
-        self.use_angle_cls = False
+        self.use_angle_cls = True
         self.cls_model_dir = './pad/ocr/models/cls_onnx/model.onnx'  # This should be set by the user
         self.cls_image_shape = "3, 48, 192"
         self.label_list = ['0', '180']

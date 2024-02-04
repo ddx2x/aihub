@@ -31,6 +31,8 @@ import utility
 from ppocr.postprocess import build_post_process
 from ppocr.utils.utility import get_image_file_list, check_and_read
 
+from ppocr.utils.logging import get_logger
+logger = get_logger()
 
 
 class TextClassifier(object):

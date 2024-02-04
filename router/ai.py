@@ -4,7 +4,7 @@ import fitz
 from PIL import Image
 import cv2
 import numpy as np
-from typing import List
+from typing import List, Optional
 import base64
 import io
 import pad.ocr.utility as utility
@@ -26,7 +26,7 @@ async def index():
 
 
 @router.post("/ai/ocr")
-async def ai_ocr(base64_imgs: List[str], pdf: UploadFile = File(None)):
+async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File(None)):
     ocr_imgs = []
     if pdf:
         pdf_data = await pdf.read()
