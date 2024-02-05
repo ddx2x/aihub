@@ -12,6 +12,7 @@ import pad.ocr.predict_system as predict_system
 from router.config import Config
 import os
 
+
 router = APIRouter(tags=["默认路由"])
 
 @router.get("/")
@@ -55,6 +56,7 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
             img = Image.open(io.BytesIO(img_data))
             ocr_imgs.append(img)
 
+
     config = Config()
     text_sys = predict_system.TextSystem(config)
     save_results = ''
@@ -65,9 +67,9 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
 
             res = ''
             for i in range(len(dt_boxes)):
-                res += rec_res[i][0]
+                if rec_res[i][1]>=0.9:
+                    res += rec_res[i][0]
 
-           
             save_results += res
 
     return {"data": save_results}
