@@ -10,7 +10,7 @@ import io
 import pad.ocr.utility as utility
 import pad.ocr.predict_system as predict_system
 from router.config import Config
-import os
+import os, uuid
 
 
 router = APIRouter(tags=["默认路由"])
@@ -30,10 +30,11 @@ async def index():
 async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File(None)):
     ocr_imgs = []
     if pdf:
+        filename = f"{uuid.uuid4()}_{pdf.filename}"
         pdf_data = await pdf.read()
-        with open("tempfile.pdf", "wb") as temp_pdf_file:
+        with open(filename, "wb") as temp_pdf_file:
             temp_pdf_file.write(pdf_data)
-        with fitz.open("tempfile.pdf") as temp_pdf:
+        with fitz.open(filename) as temp_pdf:
             for pg in range(0, temp_pdf.page_count):
                 page = temp_pdf[pg]
                 mat = fitz.Matrix(2, 2)
@@ -46,7 +47,7 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 ocr_imgs.append(img)
-        os.remove("tempfile.pdf")
+        os.remove(filename)
 
     if base64_imgs:
         for img_b64 in base64_imgs:
