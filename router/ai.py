@@ -10,7 +10,9 @@ import io
 import pad.ocr.utility as utility
 import pad.ocr.predict_system as predict_system
 from router.config import Config
+from router.util import idPhoto
 import os, uuid
+from pydantic import BaseModel, Field
 
 
 router = APIRouter(tags=["默认路由"])
@@ -62,7 +64,6 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
     text_sys = predict_system.TextSystem(config)
     save_results = ''
 
-
     for _, img in enumerate(ocr_imgs):
             dt_boxes, rec_res, time_dict = text_sys(img)
 
@@ -74,4 +75,63 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
             save_results += res
 
     return {"data": save_results}
+
+
+class ChangeBgColorRequest(BaseModel):
+    base64_img: Optional[str] = Field(None, description="The base64 encoded image")
+    color: Optional[str] = Field(None, description="The color to use as background")
+
+@router.post("/ai/change_bg_color")
+async def ai_ocr(data: ChangeBgColorRequest):
+
+    if data.base64_img is None or data.color is None:
+        raise HTTPException(status_code=400, detail="Missing base64_img or color in the request")
+    img_data = base64.b64decode(data.base64_img)
+    img = Image.open(io.BytesIO(img_data))
+
+    img_name = f"{uuid.uuid4()}-img.png"
+    bg_name = f"{uuid.uuid4()}-bg.png"
+
+    img.save(img_name)
+
+    # 去掉背景颜色
+    os.system(f'backgroundremover -i "{img_name}" -o "{bg_name}"')
+    # 加上背景颜色
+    no_bg_image = Image.open(bg_name).convert("RGBA")
+    x, y = no_bg_image.size
+    new_image = Image.new('RGBA', no_bg_image.size, color=data.color)
+    new_image.paste(no_bg_image, (0, 0, x, y), no_bg_image)
+
+    buffered = io.BytesIO()
+    new_image.save(buffered, format="PNG")
+    buffered.seek(0)
+
+    # Encode the modified image to base64
+    img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    for file in [img_name,bg_name]:
+        os.remove(file)
+
+    return {"data": img_base64}
+
+
+class GetIdCardImg(BaseModel):
+    base64_img: Optional[str] = Field(None, description="The base64 encoded image")
+    inch_choice: Optional[int] = Field(None, description="ince choice")
+
+@router.post("/ai/get_id_card_img")
+async def get_id_card_img(data: GetIdCardImg):
+    img_data = base64.b64decode(data.base64_img)
+    img = Image.open(io.BytesIO(img_data))
+    new_img = idPhoto(img,data.inch_choice)
+
+    buffered = io.BytesIO()
+    new_img.save(buffered, format="PNG")
+    buffered.seek(0)
+
+    # Encode the modified image to base64
+    img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+
+    return {"data": img_base64}
 
