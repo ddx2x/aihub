@@ -3,6 +3,9 @@ from router import RegisterRouterList
 import os,sys
 import uvicorn
 
+import nest_asyncio
+nest_asyncio.apply()
+
 app = FastAPI()
 
 for item in RegisterRouterList:

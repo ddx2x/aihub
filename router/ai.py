@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 from g4f.client import Client
 from g4f.Provider import OpenaiChat
 from pydantic import BaseModel
-
+import g4f
 
 router = APIRouter(tags=["默认路由"])
 
@@ -139,19 +139,17 @@ async def get_id_card_img(data: GetIdCardImg):
     return {"data": img_base64}
 
 
-class gpt35ChatMessage(BaseModel):
-    role: str
-    content: str
-
 
 class gpt35ChatRequest(BaseModel):
-    chat: List[gpt35ChatMessage]
+    chat: List[dict]
 
 
-@router.post("/ai/gpt3.5")
+@router.post("/ai/gpt35")
 async def gpt35(chat_request: gpt35ChatRequest):
     client = Client(provider=OpenaiChat)
     messages = chat_request.chat
-
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
-    return {"data": response.choices[0].message.content}
+    # response = await g4f.ChatCompletion.create_async(model="gpt-3.5-turbo", messages=messages, max_tokens=token_limit,temperature=0.7)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo", messages=messages, max_tokens=999999999
+    )
+    return {"data": response}
