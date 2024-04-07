@@ -141,10 +141,9 @@ async def get_id_card_img(data: GetIdCardImg):
     return {"data": img_base64}
 
 
-
 class gpt35ChatRequest(BaseModel):
     chat: List[dict]
-    api_key:str
+    api_key: str
 
 
 @router.post("/ai/gpt35")
