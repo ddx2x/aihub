@@ -1,0 +1,6 @@
+[submodule "XHS-Downloader"]
+	path = XHS-Downloader
+	url = https://github.com/JoeanAmier/XHS-Downloader
+[submodule "Douyin_TikTok_Download_API"]
+	path = Douyin_TikTok_Download_API
+	url = https://github.com/Evil0ctal/Douyin_TikTok_Download_API
