@@ -17,6 +17,8 @@ from g4f.client import Client
 from g4f.Provider import OpenaiChat
 from pydantic import BaseModel
 import g4f
+import nest_asyncio
+
 
 router = APIRouter(tags=["默认路由"])
 
@@ -142,14 +144,18 @@ async def get_id_card_img(data: GetIdCardImg):
 
 class gpt35ChatRequest(BaseModel):
     chat: List[dict]
+    api_key:str
 
 
 @router.post("/ai/gpt35")
 async def gpt35(chat_request: gpt35ChatRequest):
-    client = Client(provider=OpenaiChat)
     messages = chat_request.chat
-    # response = await g4f.ChatCompletion.create_async(model="gpt-3.5-turbo", messages=messages, max_tokens=token_limit,temperature=0.7)
+    client = Client(provider=OpenaiChat)
+    nest_asyncio.apply()
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo", messages=messages, max_tokens=999999999
+        api_key=chat_request.api_key,
+        model="gpt-3.5-turbo",
+        messages=messages,
+        max_tokens=9999999999,
     )
-    return {"data": response}
+    return {"data": response.choices[0].message.content}
