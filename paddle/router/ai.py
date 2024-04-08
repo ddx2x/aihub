@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import File, UploadFile, Form
 import fitz
 from PIL import Image
@@ -10,7 +10,7 @@ import io
 import pad.ocr.utility as utility
 import pad.ocr.predict_system as predict_system
 from router.config import Config
-from router.util import idPhoto
+from router.util import cut_photo, idPhoto, resize_photo
 import os, uuid
 from pydantic import BaseModel, Field
 from g4f.client import Client
@@ -82,6 +82,7 @@ async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File
 class ChangeBgColorRequest(BaseModel):
     base64_img: Optional[str] = Field(None, description="The base64 encoded image")
     color: Optional[str] = Field(None, description="The color to use as background")
+    inch_choice: Optional[str] = Field(None, description="ince choice")
 
 
 @router.post("/ai/change_bg_color")
@@ -107,6 +108,7 @@ async def ai_ocr(data: ChangeBgColorRequest):
     new_image = Image.new("RGBA", no_bg_image.size, color=data.color)
     new_image.paste(no_bg_image, (0, 0, x, y), no_bg_image)
 
+    new_image = resize_photo(cut_photo(new_image, data.inch_choice), data.inch_choice)
     buffered = io.BytesIO()
     new_image.save(buffered, format="PNG")
     buffered.seek(0)
@@ -122,7 +124,7 @@ async def ai_ocr(data: ChangeBgColorRequest):
 
 class GetIdCardImg(BaseModel):
     base64_img: Optional[str] = Field(None, description="The base64 encoded image")
-    inch_choice: Optional[int] = Field(None, description="ince choice")
+    inch_choice: Optional[str] = Field(None, description="ince choice")
 
 
 @router.post("/ai/get_id_card_img")

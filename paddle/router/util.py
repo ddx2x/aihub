@@ -1,13 +1,15 @@
 from PIL import Image, ImageEnhance
 import os
+
+
 def resize_photo(photo, choice):
-    if choice == 1:
+    if choice == "1":
         # 1寸照片，尺寸调整为295x413
         resized_photo = photo.resize((295, 413))
-    elif choice == 2:
+    elif choice == "2":
         # 2寸照片，尺寸调整为413x626
         resized_photo = photo.resize((413, 626))
-    elif choice == 3:
+    elif choice == "3":
         # 小2寸照片，尺寸调整为260x378
         resized_photo = photo.resize((260, 378))
     else:
@@ -18,13 +20,14 @@ def resize_photo(photo, choice):
     resized_photo = enhancer.enhance(2)
     return resized_photo
 
+
 def cut_photo(photo, choice):
     width, height = photo.size
-    if choice == 1:
+    if choice == "1":
         target_aspect = 295 / 413
-    elif choice == 2:
+    elif choice == "2":
         target_aspect = 413 / 626
-    elif choice == 3:
+    elif choice == "3":
         target_aspect = 260 / 378
     else:
         return photo  # 如果选择不是 1, 2 或 3，则返回原图
@@ -42,18 +45,22 @@ def cut_photo(photo, choice):
         x = 0
         y = (height - new_height) / 2
 
-    cutted_photo = photo.crop((x, y, x + (new_width if photo_aspect > target_aspect else width),
-                               y + (new_height if photo_aspect <= target_aspect else height)))
+    cutted_photo = photo.crop(
+        (
+            x,
+            y,
+            x + (new_width if photo_aspect > target_aspect else width),
+            y + (new_height if photo_aspect <= target_aspect else height),
+        )
+    )
     return cutted_photo
 
 
-
-
 def idPhoto(photo, choice):
-    if choice==1:
+    if choice == "1":
         print(os.path.abspath(__file__))
-        photo_1 = resize_photo(cut_photo(photo, 1), 1)
-        print_bg = Image.open('img/295-413.png')
+        photo_1 = resize_photo(cut_photo(photo, choice), choice)
+        print_bg = Image.open("img/295-413.png")
         print_bg.paste(photo_1, (120, 180))
         print_bg.paste(photo_1, (435, 180))
         print_bg.paste(photo_1, (750, 180))
@@ -65,10 +72,10 @@ def idPhoto(photo, choice):
         print_bg.paste(photo_1, (1065, 613))
         print_bg.paste(photo_1, (1380, 613))
         return print_bg
-    if choice==2:
-        photo_2 = resize_photo(cut_photo(photo, 2), 2)
+    if choice == "2":
+        photo_2 = resize_photo(cut_photo(photo, choice), choice)
         rotated_photo = photo_2.rotate(-90, expand=True)
-        twoInch = Image.open('img/626-413.png')
+        twoInch = Image.open("img/626-413.png")
         # 定义小二寸照片的起始坐标和间隔
         space_x = 386
         space_y = 55
@@ -85,10 +92,10 @@ def idPhoto(photo, choice):
             twoInch.paste(rotated_photo, (x, second_row_y_small2inch))
         return twoInch
 
-    if choice==3:
-        photo_3 = resize_photo(cut_photo(photo, 3), 3)
+    if choice == "3":
+        photo_3 = resize_photo(cut_photo(photo, choice), choice)
 
-        print_bg_small2inch = Image.open('img/260-378.png')
+        print_bg_small2inch = Image.open("img/260-378.png")
         # 定义小二寸照片的起始坐标和间隔
         space_x = 20
         space_y = 20
@@ -104,5 +111,3 @@ def idPhoto(photo, choice):
         for x in x_coords_small2inch:
             print_bg_small2inch.paste(photo_3, (x, second_row_y_small2inch))
         return print_bg_small2inch
-
-
