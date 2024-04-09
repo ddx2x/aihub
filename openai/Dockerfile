@@ -10,4 +10,4 @@ COPY --from=base-image /usr/local/lib/python3.11/site-packages /usr/local/lib/py
 WORKDIR /app
 ADD . .
 EXPOSE 8000
-CMD ["/bin/bash","-c","uvicorn main:app --host 0.0.0.0"]
+CMD ["/bin/bash","-c","uvicorn main:app --loop asyncio --host 0.0.0.0"]
