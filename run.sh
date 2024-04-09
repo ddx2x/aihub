@@ -1,5 +1,6 @@
 build_paddle() {
   version=${2:-latest}
+  docker rmi -f aihub-paddle:$version
   docker buildx build --load -t aihub-paddle:$version ./paddle
   docker rm -f aihub-paddle
   docker run -dp 8000:8000 --name aihub-paddle aihub-paddle:$version
@@ -7,6 +8,7 @@ build_paddle() {
 
 build_openai() {
   version=${2:-latest}
+  docker rmi -f harbor-pro.iauto360.cn/dengxiaopengtest/aihub-openai:$version
   docker buildx build --load -t harbor-pro.iauto360.cn/dengxiaopengtest/aihub-openai:$version ./openai
   docker push harbor-pro.iauto360.cn/dengxiaopengtest/aihub-openai:$version
 }
