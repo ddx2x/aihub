@@ -160,3 +160,16 @@ async def gpt35(chat_request: gpt35ChatRequest):
         max_tokens=9999999999,
     )
     return {"data": response.choices[0].message.content}
+
+
+async def aa(chat_request: gpt35ChatRequest):
+    messages = chat_request.chat
+    client = Client(provider=OpenaiChat)
+    nest_asyncio.apply()
+    response = client.chat.completions.create(
+        api_key=chat_request.api_key,
+        model="gpt-3.5-turbo",
+        messages=messages,
+        max_tokens=9999999999,
+    )
+    return {"data": response.choices[0].message.content}
