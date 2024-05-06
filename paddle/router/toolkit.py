@@ -206,8 +206,6 @@ async def contract(request:contractRequest):
 		'''
         
 
-    print(content)
-
     if request.other_info == "" :
         request.other_info = "没有，你直接进行分析即可"
 	

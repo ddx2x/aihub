@@ -171,9 +171,6 @@ async def groqAI(talkList: List[str], model: str):
     api_key_list = cur.fetchall() 
     if len(api_key_list)==0:
         return ''
-    
-
-
     api_key = random.choice(api_key_list)
     
     client = Groq(
