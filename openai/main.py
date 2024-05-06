@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from router import RegisterRouterList
-import os,sys
+import os, sys
 import uvicorn
+from dotenv import load_dotenv
 
+load_dotenv(verbose=True)
 app = FastAPI()
 
 for item in RegisterRouterList:
