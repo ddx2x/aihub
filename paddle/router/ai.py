@@ -1,3 +1,4 @@
+import random
 from fastapi import APIRouter, HTTPException
 from fastapi import File, UploadFile, Form
 import fitz
@@ -7,7 +8,6 @@ import numpy as np
 from typing import List, Optional
 import base64
 import io
-import pad.ocr.utility as utility
 import pad.ocr.predict_system as predict_system
 from router.config import Config
 from router.util import cut_photo, idPhoto, resize_photo
@@ -16,12 +16,13 @@ from pydantic import BaseModel, Field
 from g4f.client import Client
 from g4f.Provider import OpenaiChat
 from pydantic import BaseModel
-import g4f
 import nest_asyncio
 from groq import Groq
-
+import sqlite3 
+import re
 
 router = APIRouter(tags=["默认路由"])
+con = sqlite3.connect('sqlite.db') 
 
 
 @router.get("/")
@@ -32,64 +33,8 @@ async def index():
     return {"code": 200, "msg": "Hello AI!"}
 
 
-@router.post("/resume-parse")
-async def resumeParse(file: UploadFile = File(None), api_key: str = Form(None)):
-    defaultPrompt = """你是一名专业和资深的超级HR和资深的面试官，请你帮我分析一下简历，需要给出一些结果给我，其中回答不能有多余的额外的回答，必须严格按照我下面的格式回答，规则如下：
-	1. 整体评价: 满分100分，比如80分那就是 80/100 这种显示结果，而且需要包含大概的评价。
-	2. 总结： 给出总结
-	3. 缺点： 不少于10个，越多越好。
-	4. 修改意见：以专业的HR知识，给出不下10点的专业修改意见，越多越好。
-	5. 预估薪水：根据这份简历，从boss直聘上分析数据。根据当前国内就业环境，还有需要给出中国大陆一线城市，中国大陆二线城市。
-	6. 面试的问题和答案： 请你分析他简历是属于什么职业，预测一些面试官可能提出的一些问题，并提供答案。
-	回答格式如下：
-	
-	### 整体评价:
-	  * xxx
-	
-	### 总结:
-	  *  xxx
-	
-	### 缺点:
-	  1. xxx
-	  2. xxx
-	
-	### 修改意见:
-	   1. xxx
-	   2. xxx
-
-	### 根据Boss直聘预估薪水:
-	   1. xxx
-	   2. xxx
-	
-	### 预测面试的问题和答案:
-	   1. 问题：xxx
-		  答案：xxx
-	   2. 问题：xxx
-		  答案：xxx
-"""
-    ocr_data = await ai_ocr([], file)
-    if ocr_data["data"] == "":
-        raise HTTPException(status_code=400, detail="ocr data is none")
-    messages = [
-        {
-            "role": "user",
-            "content": defaultPrompt,
-        },
-        {
-            "role": "system",
-            "content": "好的",
-        },
-        {
-            "role": "user",
-            "content": ocr_data["data"],
-        },
-    ]
-    ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
-    return {"data": ai_answer}
-
-
 @router.post("/ai/ocr")
-async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: UploadFile = File(None)):
+async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: Optional[UploadFile] = File(None)):
     ocr_imgs = []
     if pdf:
         filename = f"{uuid.uuid4()}_{pdf.filename}"
@@ -143,7 +88,7 @@ class ChangeBgColorRequest(BaseModel):
 
 
 @router.post("/ai/change_bg_color")
-async def ai_ocr(data: ChangeBgColorRequest):
+async def ai_change_bg_color(data: ChangeBgColorRequest):
 
     if data.base64_img is None or data.color is None:
         raise HTTPException(
@@ -220,9 +165,22 @@ async def gpt35(chat_request: gpt35ChatRequest):
 
 
 async def groqAI(talkList: List[str], model: str):
-    apikey = os.getenv("groq_api_key")
+    cur = con.cursor() 
+    sql = 'select * from groq_account'
+    cur.execute(sql)
+    api_key_list = cur.fetchall() 
+    if len(api_key_list)==0:
+        return ''
+    
+
+
+    api_key = random.choice(api_key_list)
+    
     client = Groq(
-        api_key=apikey,
+        api_key=api_key[1],
     )
     chat_completion = client.chat.completions.create(messages=talkList, model=model)
-    return chat_completion.choices[0].message.content
+    if len(chat_completion.choices)==0:
+        return ''
+    str = re.sub(r'[a-zA-Z]', '', chat_completion.choices[0].message.content)
+    return str
