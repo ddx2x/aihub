@@ -72,14 +72,12 @@ async def resumeParse(pdf: Optional[UploadFile] = File(None), api_key: str = For
         },
     ]
     ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
-    return {"data": ai_answer}
-
+    return {"answer": ai_answer}
 
 
 class fortuneRequest(BaseModel):
     baseInfo: Optional[str] = Field(None, description="")
     otherInfo: Optional[str] = Field(None, description="")
-
 
 
 @router.post("/fortune")
@@ -111,8 +109,7 @@ async def fortune(request:fortuneRequest):
         },
     ]
     ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
-    return {"data": ai_answer}
-
+    return {"answer": ai_answer}
 
 
 @router.post("/fortune-ym")
@@ -163,8 +160,7 @@ async def fortuneYM(request:fortuneRequest):
     messages.append({ "role": "system", "content": ai_answer})
     messages.append({ "role": "user", "content": content})
     ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
-    return {"data": ai_answer}
-
+    return {"answer": ai_answer}
 
 
 class contractRequest(BaseModel):
@@ -180,7 +176,7 @@ async def contract(request:contractRequest):
     if ocr_data["data"] == "":
         raise HTTPException(status_code=400, detail="ocr data is none")
     print(ocr_data["data"])
-    
+
     defaultPrompt = f'''我有一个关于合同的{request.type}需要咨询你，加下来我会发一份合同给你，需要你帮我修改，全部用简体中文回答，给我的回答包括：缺点(列出至少三个)、建议修改(列出至少三个)、其他建议(列出至少三个)
 		你回答的格式如下:
 		### 缺点：
@@ -204,11 +200,10 @@ async def contract(request:contractRequest):
 		
 		3. **xxx:** xxxx
 		'''
-        
 
     if request.other_info == "" :
         request.other_info = "没有，你直接进行分析即可"
-	
+
     messages = [
          {
             "role": "user",
@@ -241,7 +236,4 @@ async def contract(request:contractRequest):
     ]
     ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
 
-    return {"data": ai_answer}
-
-
-
+    return {"answer": ai_answer}
