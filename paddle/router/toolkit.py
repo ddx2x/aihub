@@ -11,7 +11,7 @@ router = APIRouter(tags=["默认路由"])
 
 
 @router.post("/resume-parse")
-async def resumeParse(pdf: Optional[UploadFile] = File(None), api_key: str = Form(None)):
+async def resumeParse(file: Optional[UploadFile] = File(None), api_key: str = Form(None)):
     defaultPrompt = """你是一名专业和资深的超级HR和资深的面试官，请你帮我分析一下简历，需要给出一些结果给我，其中回答不能有多余的额外的回答，必须严格按照我下面的格式回答，规则如下：
 	1. 整体评价: 满分100分，比如80分那就是 80/100 这种显示结果，而且需要包含大概的评价。
 	2. 总结： 给出总结
@@ -45,7 +45,7 @@ async def resumeParse(pdf: Optional[UploadFile] = File(None), api_key: str = For
 	   2. 问题：xxx
 		  答案：xxx
 """
-    ocr_data = await ai_ocr(base64_imgs=None, pdf=pdf)
+    ocr_data = await ai_ocr(base64_imgs=None, pdf=file)
     if ocr_data["data"] == "":
         raise HTTPException(status_code=400, detail="ocr data is none")
     print(ocr_data["data"])
