@@ -166,7 +166,7 @@ async def gpt35(chat_request: gpt35ChatRequest):
     return {"data": response.choices[0].message.content}
 
 
-async def groqAI(talkList: List[str], model: str, re: bool = True):
+async def groqAI(talkList: List[str], model: str, needRe: bool = True):
     cur = con.cursor()
     sql = "select * from groq_account"
     cur.execute(sql)
@@ -181,5 +181,7 @@ async def groqAI(talkList: List[str], model: str, re: bool = True):
     chat_completion = client.chat.completions.create(messages=talkList, model=model)
     if len(chat_completion.choices) == 0:
         return ""
-    str = re.sub(r"[a-zA-Z]", "", chat_completion.choices[0].message.content)
+    str = chat_completion.choices[0].message.content
+    if needRe:
+        str = re.sub(r"[a-zA-Z]", "", str)
     return str
