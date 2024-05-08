@@ -53,19 +53,15 @@ async def resumeParse(
     print(ocr_data["data"])
     messages = [
         {
-            "role": "user",
-            "content": "接下来我会问你一些问题，你只可以简体中文回答，绝对不可以出现其他语言",
-        },
-        {
             "role": "system",
-            "content": "好的",
+            "content": "接下来的对话，只可以简体中文回答，绝对不可以出现其他语言",
         },
         {
             "role": "user",
             "content": defaultPrompt,
         },
         {
-            "role": "system",
+            "role": "assistant",
             "content": "好的",
         },
         {
@@ -73,7 +69,7 @@ async def resumeParse(
             "content": ocr_data["data"],
         },
     ]
-    ai_answer = await groqAI(messages, "mixtral-8x7b-32768", False)
+    ai_answer = await groqAI(messages, "llama3-70b-8192", False)
     return {"answer": ai_answer}
 
 
@@ -90,19 +86,15 @@ async def fortune(request: fortuneRequest):
     print(content)
     messages = [
         {
-            "role": "user",
-            "content": "接下来我会问你一些问题，你只可以简体中文回答，绝对不可以出现其他语言，绝对不可以出现英文",
-        },
-        {
             "role": "system",
-            "content": "好的",
+            "content": "接下来的对话，只可以简体中文回答，绝对不可以出现其他语言",
         },
         {
             "role": "user",
             "content": defaultPrompt,
         },
         {
-            "role": "system",
+            "role": "assistant",
             "content": "好的",
         },
         {
@@ -121,20 +113,16 @@ async def fortuneYM(request: fortuneRequest):
     content = f"命盘基本信息：{request.baseInfo}\n  命盘宫位信息： {request.otherInfo}"
     print(content)
     messages = [
-        {
-            "role": "user",
-            "content": "接下来我会问你一些问题，你只可以简体中文回答，绝对不可以出现其他语言,绝对不可以出现英文",
-        },
-        {
+       {
             "role": "system",
-            "content": "好的",
+            "content": "接下来的对话，只可以简体中文回答，绝对不可以出现其他语言",
         },
         {
             "role": "user",
             "content": defaultPrompt,
         },
         {
-            "role": "system",
+            "role": "assistant",
             "content": "好的",
         },
         {
@@ -207,20 +195,16 @@ async def contract(request: contractRequest):
         request.other_info = "没有，你直接进行分析即可"
 
     messages = [
-        {
-            "role": "user",
-            "content": "接下来我会问你一些问题，你只可以简体中文回答，绝对不可以出现其他语言,绝对不可以出现英文",
-        },
-        {
+       {
             "role": "system",
-            "content": "好的",
+            "content": "接下来的对话，只可以简体中文回答，绝对不可以出现其他语言",
         },
         {
             "role": "user",
             "content": defaultPrompt,
         },
         {
-            "role": "system",
+            "role": "assistant",
             "content": "好的",
         },
         {
@@ -228,7 +212,7 @@ async def contract(request: contractRequest):
             "content": f'合同内容如下:{ocr_data["data"]}',
         },
         {
-            "role": "system",
+            "role": "assistant",
             "content": "好的，你有什么要补充的吗",
         },
         {
