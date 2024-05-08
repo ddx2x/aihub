@@ -18,11 +18,11 @@ from g4f.Provider import OpenaiChat
 from pydantic import BaseModel
 import nest_asyncio
 from groq import Groq
-import sqlite3 
+import sqlite3
 import re
 
 router = APIRouter(tags=["默认路由"])
-con = sqlite3.connect('sqlite.db') 
+con = sqlite3.connect("sqlite.db")
 
 
 @router.get("/")
@@ -34,7 +34,9 @@ async def index():
 
 
 @router.post("/ai/ocr")
-async def ai_ocr(base64_imgs: Optional[List[str]] = None, pdf: Optional[UploadFile] = File(None)):
+async def ai_ocr(
+    base64_imgs: Optional[List[str]] = None, pdf: Optional[UploadFile] = File(None)
+):
     ocr_imgs = []
     if pdf:
         filename = f"{uuid.uuid4()}_{pdf.filename}"
@@ -164,20 +166,20 @@ async def gpt35(chat_request: gpt35ChatRequest):
     return {"data": response.choices[0].message.content}
 
 
-async def groqAI(talkList: List[str], model: str):
-    cur = con.cursor() 
-    sql = 'select * from groq_account'
+async def groqAI(talkList: List[str], model: str, re: bool = True):
+    cur = con.cursor()
+    sql = "select * from groq_account"
     cur.execute(sql)
-    api_key_list = cur.fetchall() 
-    if len(api_key_list)==0:
-        return ''
+    api_key_list = cur.fetchall()
+    if len(api_key_list) == 0:
+        return ""
     api_key = random.choice(api_key_list)
-    
+
     client = Groq(
         api_key=api_key[1],
     )
     chat_completion = client.chat.completions.create(messages=talkList, model=model)
-    if len(chat_completion.choices)==0:
-        return ''
-    str = re.sub(r'[a-zA-Z]', '', chat_completion.choices[0].message.content)
+    if len(chat_completion.choices) == 0:
+        return ""
+    str = re.sub(r"[a-zA-Z]", "", chat_completion.choices[0].message.content)
     return str
