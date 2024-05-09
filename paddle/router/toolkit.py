@@ -69,7 +69,7 @@ async def resumeParse(
             "content": ocr_data["data"],
         },
     ]
-    ai_answer = await groqAI(messages, "llama3-70b-8192", False)
+    ai_answer = await groqAI(messages, "mixtral-8x7b-32768", False)
     return {"answer": ai_answer}
 
 
