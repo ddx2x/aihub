@@ -15,37 +15,37 @@ async def resumeParse(
     file: Optional[UploadFile] = File(None), api_key: str = Form(None)
 ):
     defaultPrompt = """你是一名专业和资深的超级HR和资深的面试官，请你帮我分析一下简历，需要给出一些结果给我，其中回答不能有多余的额外的回答，必须严格按照我下面的格式回答，规则如下：
-	1. 整体评价: 满分100分，比如80分那就是 80/100 这种显示结果，而且需要包含大概的评价。
-	2. 总结： 给出总结
-	3. 缺点： 不少于10个，越多越好。
-	4. 修改意见：以专业的HR知识，给出不下10点的专业修改意见，越多越好。
-	5. 预估薪水：根据这份简历，从boss直聘上分析数据。根据当前国内就业环境，还有需要给出中国大陆一线城市，中国大陆二线城市。
-	6. 面试的问题和答案： 请你分析他简历是属于什么职业，预测一些面试官可能提出的一些问题，并提供答案。
-	回答格式如下：
-	
-	### 整体评价:
-	  * xxx
-	
-	### 总结:
-	  *  xxx
-	
-	### 缺点:
-	  1. xxx
-	  2. xxx
-	
-	### 修改意见:
-	   1. xxx
-	   2. xxx
+    1. 整体评价: 满分100分，比如80分那就是 80/100 这种显示结果，而且需要包含大概的评价。
+    2. 总结： 给出总结
+    3. 缺点： 不少于10个，越多越好。
+    4. 修改意见：以专业的HR知识，给出不下10点的专业修改意见，越多越好。
+    5. 预估薪水：根据这份简历，从boss直聘上分析数据。根据当前国内就业环境，还有需要给出中国大陆一线城市，中国大陆二线城市。
+    6. 面试的问题和答案： 请你分析他简历是属于什么职业，预测一些面试官可能提出的一些问题，并提供答案。
+    回答格式如下：
+    
+    ### 整体评价:
+      * xxx
+    
+    ### 总结:
+      *  xxx
+    
+    ### 缺点:
+      1. xxx
+      2. xxx
+    
+    ### 修改意见:
+       1. xxx
+       2. xxx
 
-	### 根据Boss直聘预估薪水:
-	   1. xxx
-	   2. xxx
-	
-	### 预测面试的问题和答案:
-	   1. 问题：xxx
-		  答案：xxx
-	   2. 问题：xxx
-		  答案：xxx
+    ### 根据Boss直聘预估薪水:
+       1. xxx
+       2. xxx
+    
+    ### 预测面试的问题和答案:
+       1. 问题：xxx
+          答案：xxx
+       2. 问题：xxx
+          答案：xxx
 """
     ocr_data = await ai_ocr(base64_imgs=None, pdf=file)
     if ocr_data["data"] == "":
@@ -134,19 +134,19 @@ async def fortuneYM(request: fortuneRequest):
 
     zhday = ZhDate.today()
     content = f"""根据以上信息，今天是农历{zhday}，请帮我分析一下流年的运势，包整体流年运势，事业运势，财运运势，感情运势，健康运势，建议。
-	格式如下：
-	**总结整体运势**
-		xxxxxx
-	* 事业运势
-		* xxxx
-	* 财运运势
-		* xxxx
+    格式如下：
+    **总结整体运势**
+        xxxxxx
+    * 事业运势
+        * xxxx
+    * 财运运势
+        * xxxx
     * 感情运势
-		* xxxxx
-	* 健康运势
-		* xxxxx
-	**建议**
-		xxxxxx"""
+        * xxxxx
+    * 健康运势
+        * xxxxx
+    **建议**
+        xxxxxx"""
     messages.append({"role": "system", "content": ai_answer})
     messages.append({"role": "user", "content": content})
     ai_answer = await groqAI(messages, "mixtral-8x7b-32768")
@@ -168,28 +168,28 @@ async def contract(request: contractRequest):
     print(ocr_data["data"])
 
     defaultPrompt = f"""我有一个关于合同的{request.type}需要咨询你，加下来我会发一份合同给你，需要你帮我修改，全部用简体中文回答，给我的回答包括：缺点(列出至少三个)、建议修改(列出至少三个)、其他建议(列出至少三个)
-		你回答的格式如下:
-		### 缺点：
-		1. **xxx:** xxxx
-		  
-		2. **xxx:** xxxx
-		
-		3. **xxx:** xxxx
-		
-		### 建议修改：
-		1. **xxx:** xxxx
-		
-		2. **xxx:** xxxx
-		
-		3. **xxx:** xxxx
-		
-		### 其他建议：
-		1. **xxx:** xxxx
-		
-		2. **xxx:** xxxx
-		
-		3. **xxx:** xxxx
-		"""
+        你回答的格式如下:
+        ### 缺点：
+        1. **xxx:** xxxx
+          
+        2. **xxx:** xxxx
+        
+        3. **xxx:** xxxx
+        
+        ### 建议修改：
+        1. **xxx:** xxxx
+        
+        2. **xxx:** xxxx
+        
+        3. **xxx:** xxxx
+        
+        ### 其他建议：
+        1. **xxx:** xxxx
+        
+        2. **xxx:** xxxx
+        
+        3. **xxx:** xxxx
+        """
 
     if request.other_info == "":
         request.other_info = "没有，你直接进行分析即可"
